@@ -1,11 +1,11 @@
 <?php
 
-namespace Leantime\Plugins\PluginTemplate\Middleware;
+namespace Leantime\Plugins\Whiteboards\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Cache;
-use Leantime\Core\Environment;
-use Leantime\Core\IncomingRequest;
+use Leantime\Core\Configuration\Environment;
+use Leantime\Core\Http\IncomingRequest;
 use Symfony\Component\HttpFoundation\Response;
 use Leantime\Core\Language;
 
@@ -17,39 +17,40 @@ class GetLanguageAssets
     ) {}
 
     /**
-     * Install the custom fields plugin DB if necessary.
+     * Load plugin language assets.
      *
      * @param \Closure(IncomingRequest): Response $next
      * @throws BindingResolutionException
      **/
     public function handle(IncomingRequest $request, Closure $next): Response
     {
-        $languageArray = Cache::get('plugintemplate.languageArray', []);
+        $cacheKey = 'whiteboards.languageArray';
+
+        $languageArray = Cache::get($cacheKey, []);
 
         if (! empty($languageArray)) {
             $this->language->ini_array = array_merge($this->language->ini_array, $languageArray);
             return $next($request);
         }
 
-        if (! Cache::store('installation')->has('plugintemplate.language.en-US')) {
+        if (! Cache::store('installation')->has('whiteboards.language.en-US')) {
             $languageArray += parse_ini_file(__DIR__ . '/../Language/en-US.ini', true);
         }
 
         if (($language = $_SESSION["usersettings.language"] ?? $this->config->language) !== 'en-US') {
-            if (! Cache::store('installation')->has('plugintemplate.language.' . $language)) {
+            if (! Cache::store('installation')->has('whiteboards.language.' . $language)) {
                 Cache::store('installation')->put(
-                    'plugintemplate.language.' . $language,
+                    'whiteboards.language.' . $language,
                     parse_ini_file(__DIR__ . '/../Language/' . $language . '.ini', true)
                 );
             }
 
-            $languageArray = array_merge($languageArray, Cache::store('installation')->get('plugintemplate.language.' . $language));
+            $languageArray = array_merge($languageArray, Cache::store('installation')->get('whiteboards.language.' . $language));
         }
 
-        Cache::put('plugintemplate.languageArray', $languageArray);
+        Cache::put($cacheKey, $languageArray);
 
         $this->language->ini_array = array_merge($this->language->ini_array, $languageArray);
         return $next($request);
     }
 }
-
