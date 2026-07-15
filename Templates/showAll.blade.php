@@ -16,9 +16,7 @@
         {!! $tpl->displayNotification() !!}
 
         @if (empty($whiteboards))
-            <div class="alert alert-info">
-                {!! __('text.no_whiteboards') !!}
-            </div>
+            <p style="text-align:center;color:#999;padding:40px 0;font-size:15px;">{!! __('text.no_whiteboards') !!}</p>
         @else
             <div class="row">
                 @foreach ($whiteboards as $wb)
@@ -46,11 +44,25 @@
 @once @push('scripts')
 <script>
 jQuery(document).ready(function() {
-    // Delete confirmation
+    // Delete: first click shows confirm, second click deletes
     jQuery(".deleteWhiteboard").on("click", function (e) {
-        if (!confirm("{!! __('confirm.delete_whiteboard') !!}")) {
-            e.preventDefault();
+        var $this = jQuery(this);
+        if ($this.hasClass("confirming")) {
+            // Second click: do delete
+            window.location.href = $this.data("url");
+            return;
         }
+        // First click: show confirm state
+        e.preventDefault();
+        $this.addClass("confirming");
+        $this.css("color", "#c9302c");
+        $this.html('<span class="fa fa-exclamation-triangle"></span> Sure?');
+        // Reset after 3 seconds
+        setTimeout(function() {
+            $this.removeClass("confirming");
+            $this.css("color", "#d9534f");
+            $this.html('<span class="fa fa-trash"></span> Delete');
+        }, 3000);
     });
 
     // Inline rename: click title to show form

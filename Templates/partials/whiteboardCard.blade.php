@@ -30,10 +30,12 @@
         </div>
 
         <div style="margin-top: 8px;">
-            <a href="{{ BASE_URL }}/whiteboards/delete/{{ $wb['id'] }}"
+            <a href="javascript:void(0)"
                class="deleteWhiteboard"
+               data-id="{{ $wb['id'] }}"
+               data-url="{{ BASE_URL }}/whiteboards/delete/{{ $wb['id'] }}"
                style="color: #d9534f;">
-                <span class="fa fa-trash"></span> {!! __('buttons.delete_whiteboard') !!}
+                <span class="fa fa-trash"></span> Delete
             </a>
         </div>
     </div>

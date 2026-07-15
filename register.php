@@ -76,9 +76,7 @@ function addWhiteboardProjectTabContent($params)
         </div>
 
         <?php if (empty($whiteboards)): ?>
-            <div class="alert alert-info">
-                <?= __('text.no_whiteboards') ?>
-            </div>
+            <p style="text-align:center;color:#999;padding:30px 0;"><?= __('text.no_whiteboards') ?></p>
         <?php else: ?>
             <div class="row">
                 <?php foreach ($whiteboards as $wb): ?>
